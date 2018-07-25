@@ -26,7 +26,48 @@ To view a copy of this license, visit http://creativecommons.org/licenses/GPL/2.
 
 */
 //================================================
+var ws;
+function openSocket(){
+	var socket, path;
+    path = 'wss://echo.websocket.org'; // successfully access this path.
+    
+    console.log( '===> Tested path :: ', path );
+    try {
+        ws = new WebSocket( path );
+    }
+    catch ( e ) {
+        console.error( '===> WebSocket creation error :: ', e );
+    }
+	ws.onopen = function(){
+		//alert('open...');
+		console.log( 'Open ' );
+		//ws.send('text');
+	}
+	
+	ws.onmessage = function(e){
+		console.log( 'Receive ', e.data);
+		
+	}
+	
+	ws.onclose = function(e){
+		ws = undefined;
+		//alert('close...' + e);
+		console.log('close...' + e);
+	}
+}
+(function(){
+	openSocket();
+	    if(ws === undefined){
+	    	openSocket();
+	    }
+})();
 
+
+
+
+
+var flagpause=0;
+var flagplay=1;
 (ytCinema = {
 	players: {objs: [], active: 0},
 	messageEvent: new Event('ytCinemaMessage'),
@@ -83,9 +124,31 @@ To view a copy of this license, visit http://creativecommons.org/licenses/GPL/2.
 					for(var j=0; j<players.length; j++) {
 						(function(o, p) {
 							var ev = {
-								pause: function() {if(!p.ended) {o.players.active -= 1;} if(o.players.active < 1){o.playerStateChange(2);}},
-								play: function() {o.players.active += 1; o.playerStateChange(1);},
-								ended: function() {o.players.active -= 1; if(o.players.active < 1){o.playerStateChange(0);}}
+								pause: function() {
+									if(flagpause<=0) {
+										flagpause=1; flagplay=0; console.log("pause"); /*Vineeth: Code to send update goes here*/          
+										if(ws && ws.readyState === WebSocket.OPEN){
+											console.log( 'Send Pause' );
+											ws.send('paused at ' + p.currentTime);
+										}
+										}  
+									if(!p.ended) {o.players.active -= 1;} if(o.players.active < 1){o.playerStateChange(2);}
+									},
+									
+								play: function() {
+									if(flagplay<=0) {
+										flagplay=1; flagpause=0; console.log("play");    /*Vineeth: Code to send update goes here*/   
+										if(ws && ws.readyState === WebSocket.OPEN){										
+											console.log( 'Send Play' );
+											ws.send('Playing at ' + p.currentTime);      
+										}
+										}  
+									o.players.active += 1; o.playerStateChange(1);
+									},
+									
+								ended: function() {
+									console.log("ended");  o.players.active -= 1; if(o.players.active < 1){o.playerStateChange(0);}
+									}
 							};
 							p.removeEventListener("pause", ev.pause); p.removeEventListener("play", ev.play); p.removeEventListener("ended", ev.ended);
 							
@@ -122,3 +185,5 @@ To view a copy of this license, visit http://creativecommons.org/licenses/GPL/2.
 		}
 	}
 }).initialize();
+
+

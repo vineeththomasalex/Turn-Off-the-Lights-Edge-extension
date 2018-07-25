@@ -34,8 +34,10 @@ if (window.location.href.match(/((http:\/\/(.*youtube\.com\/.*))|(https:\/\/(.*y
 	
 	if (typeof(sp.pauseVideo) === "function") {
 		sp.pauseVideo();
+		console.log('Pause Video');
 	} else if (typeof(video.pause) === "function") {
 		video.pause();
+		console.log('Pause Video');
 	}
 } else{
 	var htmlplayer = document.getElementsByTagName("video");

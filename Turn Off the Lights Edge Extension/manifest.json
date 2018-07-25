@@ -18,7 +18,8 @@
             "30": "icons/icon30.png",
             "40": "icons/icon40.png"
         },
-        "default_title": "Turn Off the Lights"
+        "default_title": "Turn Off the Lights",
+		"default_popup": "popup.html"
     },
     "permissions": [
         "contextMenus",

@@ -33,7 +33,7 @@ if (typeof msBrowser !== 'undefined') {
 else if (typeof browser != 'undefined') {
     chrome = browser;
 }
-
+console.log("start content"); 
 
 /* inject script for autoplay */
 try {
@@ -1846,6 +1846,7 @@ var ythdinit = function onYouTubePlayerReady(player) {
 }
 
 var ythdstatechange = function onytplayerStateChange(newState) {
+	console.log("3 change"); 
 		if(newState == 3 && !donesetquality){
 			updateQuality();
 		}
